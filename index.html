@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MSC FiveM E-commerce Security Proposal</title>
+    <style>
+        :root {
+            --primary: #674dcb;
+            --primary-light: #b37bb7;
+            --dark: #111116;
+            --light: #ffffff;
+            --gray: #7e7e9a;
+        }
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: var(--dark);
+            color: var(--light);
+        }
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            margin-bottom: 20px;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .logo img {
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+        }
+        .logo-text h1 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+        .logo-text p {
+            margin: 0;
+            font-size: 0.8rem;
+            color: var(--gray);
+        }
+        .date {
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+        h2 {
+            color: var(--primary-light);
+            margin-top: 30px;
+        }
+        h3 {
+            color: var(--gray);
+            font-weight: normal;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+        }
+        table th, table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        table th {
+            background-color: rgba(255,255,255,0.05);
+            text-align: left;
+        }
+        input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+        .risk {
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: bold;
+        }
+        .risk-critical {
+            background-color: #e53935;
+            color: white;
+        }
+        .risk-high {
+            background-color: #ff9800;
+            color: black;
+        }
+        .risk-medium {
+            background-color: #ffc107;
+            color: black;
+        }
+        .risk-low {
+            background-color: #4caf50;
+            color: white;
+        }
+        .total-section {
+            background-color: rgba(255,255,255,0.05);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 30px 0;
+        }
+        .total-table {
+            width: 100%;
+        }
+        .total-table td {
+            padding: 8px 0;
+        }
+        .total-table .price {
+            text-align: right;
+        }
+        .total-row {
+            font-weight: bold;
+            font-size: 1.2rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+        .button-section {
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        .button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s ease;
+        }
+        .primary-button {
+            background: linear-gradient(to right, var(--primary), var(--primary-light));
+            color: white;
+            box-shadow: 0 4px 8px rgba(103, 77, 203, 0.3);
+        }
+        .secondary-button {
+            background-color: rgba(255,255,255,0.1);
+            color: white;
+        }
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(103, 77, 203, 0.4);
+        }
+        .message {
+            display: none;
+            background-color: var(--primary);
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+            text-align: center;
+        }
+        footer {
+            text-align: center;
+            padding: 20px 0;
+            margin-top: 30px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAACXBIWXMAAAsTAAALEwEAmpwYAAAFQElEQVR4nO2ae4hUVRzHP7rubGlPH6S9NjPLR5EJlpkPCit3Z1bSB/SXiAVmEGVBJBUF/lFBQRBERf1REUUURBFERdRuJBW1szOzrpWZD0yzZ5pZlj0099cfvzN7d51773R3Zmdh9wvDnXvP+Z3z+53H73fOHaijjjrq8A2mGlgMbAY6gALQDnwEzEVxDQLmAV8CpxCHXAKeBqpSsP8F7Ae2AVuBQ8AJ4CDwCDAyRddsYB1wHCgijj0LvA+MrKThDcBpoA9YDtQXyQwCrgGeBX4FTgIvABcnyN8JFIAD2lgbRi0wCdgGnAE+IabXrAD+MQNs9VDgImADZsR+AGaXkKkDthsdBW741yk2fAIwB/gA+Bvw+odsHf95Fvgd2ANMDZGdbhy4Hwdd6PJOXcHn3cB4YB3QPbAKyoRrEIdsBRojfXKVxpTUhVHmAw9inoTyIbAVc+D+OlmYKaM12o26gzS8B5zgv+2oc4dVj8IHx5+Bl1I0vhK4DvjRr3CYabMcidkQxlLlRs6zqbgKWBBVpnq1GLN65uSjJi0uBXaa76wfRVAuTNWeqNu4ByghfcYONqtiXeqN3OmIGpGNQjXwrVG6KcyIs5ZbMFfvA2A48Ew+GvLBo5Y9x6yiD4EDQBswOo0OKZ2LufKO6lFgBHAXZkm1n1uBaix5lRF43rh1v5Wdoo5gZO4QTmI1kDEVPm7q91vZSSGOrMVcvT2YQyKPyf+OiajDaWQ1ZirdbGXDJYuQ5B6yNsxoAdZr21lO9Wjw0rQTD/gbTwgRbgmV1Nl+9KlEjhzUNm8OE2jNaEO08hPYNpTEKUyjl5pJfwLbbFyNHEVimHODhJrdpRbSGXWqThEH5OaUlz6FLFw8YHUY/Xf7FXaL50HchHnIDTiuQZRsaOV/RfKm/i/8KnS3Vno/UqQupRMX5/ORHQ/cpXJOI4djnGMOWF3Jl/3e9CW8KwHIlKvBzGXP2q0AXxk9t/lV6GaHl8gtzocYsxK4BliCJIWvl5A/ZurzTbQ9Ffdqoz+mkF9g5D9BnFtCJmNk3/Gr0M0OL5V7hVQsR5KI24GvgU+RqGcBcDXJvW4a8LXqfLbcTpQoufDKe4D1wEm9TcdMm4xpqE0bdxoYW46CtD3yKuElJBvwEvAYEtVnS8iPQ/IkReClSixYbkaKSBWR3ItTRd6F5MTL4k5H4pEitMitJyYBu408wKSYdUxCQqTwWDJnbF8AXAf854hM8nGyxu4iEvbHyXYGAfcgkSVIUUiDHiT6KCLnXSLkklFSrxKwwQDg9yxSTeBHXrSRO0OEbkBCiCKS9miIKb8MydSfQg5TJ8kFrFqzmXoiWMQhF3VL5kTzA2oXb5jGOxC82vbIfWQQFfZJuO1VIXZNNOdXGrKlnEnjSK+xHRpGJDlii5yk6xIaKiC1oyYkLRRFUt1Ck7HtmYiOeIPCLXH3NpOlT1OFkxO6zeSXmb15JK+fN7qXh9i7EEkZl3xG2V0rPUqnMmryhg9LFZa8YEiZiWYkO3gKiXNnJdj9qHnxA8DFyGr6Dbk6mYLr3c9c26I3IOFGK5JIb0biWLvUPQF8huQvPkKSI2HORs6aPPBjpI34IHCJNtIaLlYZHAe+R8KNBXqvWkc1yPl1GIn3X8MHfvfIJCQ5UUAyzBcgodDLmO/7Eb9G6qijjjr+B/wLvI6NX4waPtEAAAAASUVORK5CYII=">
+                <div class="logo-text">
+                    <h1>MSC FiveM E-commerce</h1>
+                    <p>ข้อเสนอการปรับปรุงความปลอดภัยระบบ</p>
+                </div>
+            </div>
+            <div class="date">
+                May 4, 2025
+            </div>
+        </header>
+
+        <section>
+            <h2>ผลการตรวจสอบความปลอดภัย</h2>
+            <h3>เลือกรายการปรับปรุงความปลอดภัยที่ต้องการดำเนินการ</h3>
+            
+            <table id="security-items">
+                <thead>
+                    <tr>
+                        <th width="5%">Select</th>
+                        <th width="40%">Security Issue</th>
+                        <th width="10%">Risk Level</th>
+                        <th width="30%">Description</th>
+                        <th width="15%">Price (THB)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Critical Risk Items -->
+                    <tr>
+                        <td><input type="checkbox" class="item-check" data-price="15000" data-risk="critical"></td>
+                        <td>การเปิดเผยข้อมูลสำคัญใน .env</td>
+                        <td><span class="risk risk-critical">วิกฤต</span></td>
+                        <td>ข้อมูลรหัสผ่านและ API key ถูกเปิดเผยในโค้ด ต้องย้าย secrets ออกจากโค้ด สร้างระบบจัดการ env ใหม่ และใช้ระบบ vault สำหรับข้อมูลสำคัญ (ไฟล์: .env, lib/auth.ts)</td>
+                        <td>15,000</td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox" class="item-check" data-price="12000" data-risk="critical"></td>
+                        <td>ช่องโหว่การเข้าถึงไฟล์นอกเส้นทาง</td>
+                        <td><span class="risk risk-critical">วิกฤต</span></td>
+                        <td>ส่วนดาวน์โหลดไฟล์เปิดช่องให้เข้าถึงไฟล์ที่ไม่ได้รับอนุญาตได้ ต้องปรับปรุง sanitize ข้อมูลนำเข้า กำหนดขอบเขตการเข้าถึงไฟล์ และตรวจสอบสิทธิ์อย่างเข้มงวด (ไฟล์: app/api/download/route.ts)</td>
+                        <td>12,000</td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox" class="item-check" data-price="10000" data-risk="critical"></td>
+                        <td>การยืนยันตัวตนผู้ดูแลระบบไม่ปลอดภัย</td>
+                        <td><span class="risk risk-critical">วิกฤต</span></td>
+                        <td>รหัสผ่านผู้ดูแลระบบเก็บเป็นข้อความธรรมดาไม่มีการเข้ารหัส ต้องปรับปรุงใช้ bcrypt เข้ารหัสรหัสผ่าน เพิ่มระบบ 2FA และปรับปรุงกระบวนการตรวจสอบสิทธิ์ (ไฟล์: lib/auth.ts, app/admin/client-comp.tsx)</td>
+                        <td>10,000</td>
+                    </tr>
+
+                    <!-- High Risk Items -->
+                    <tr>
+                        <td><input type="checkbox" class="item-check" data-price="8500" data-risk="high"></td>
+                        <td>การตรวจสอบไฟล์อัปโหลดไม่เพียงพอ</td>
+                        <td><span class="risk risk-high">สูง</span></td>
+                        <td>ไม่มีการตรวจสอบประเภทไฟล์และเนื้อหา ต้องเพิ่มการตรวจสอบ MIME type, ขนาดไฟล์, สกัดไวรัส และจำกัดประเภทไฟล์ที่อนุญาต (ไฟล์: app/profile/pages/top-up.tsx, app/actions/product-management.ts)</td>
+                        <td>8,500</td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox" class="item-check" data-price="9000" data-risk="high"></td>
+                        <td>ความไม่ปลอดภัยของ API การชำระเงิน</td>
+                        <td><span class="risk risk-high">สูง</span></td>
+                        <td>การตรวจสอบในกระบวนการชำระเงินไม่เพียงพอ ต้องเพิ่มการยืนยันการทำธุรกรรม, การตรวจสอบ signature, ใช้ HMAC และเพิ่มระบบ logging สำหรับธุรกรรมทั้งหมด (ไฟล์: app/actions/top-up.ts, app/actions/purchase.ts)</td>
+                        <td>9,000</td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox" class="item-check" data-price="7500" data-risk="high"></td>
+                        <td>ช่องโหว่ CSRF</td>
+                        <td><span class="risk risk-high">สูง</span></td>
+                        <td>ไม่มี CSRF token สำหรับฟอร์มสำคัญ ต้องเพิ่ม CSRF token ทุกฟอร์ม, ตรวจสอบ origin ของ request และเพิ่ม SameSite cookie policy (ไฟล์: lib/auth.ts, app/actions/top-up.ts, app/actions/purchase.ts)</td>
+                        <td>7,500</td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox" class="item-check" data-price="6500" data-risk="high"></td>
+                        <td>ข้อมูล localStorage ไม่ได้เข้ารหัส</td>
+                        <td><span class="risk risk-high">สูง</span></td>
+                        <td>ข้อมูลตะกร้าสินค้าถูกเก็บโดยไม่มีการเข้ารหัส ต้องเพิ่ม AES encryption สำหรับ localStorage, แยกข้อมูลออกจาก client และเก็บข้อมูลสำคัญไว้ฝั่ง server (ไฟล์: utils/cart-manager.ts)</td>
+                        <td>6,500</td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox" class="item-check" data-price="6000" data-risk="high"></td>
+                        <td>นโยบายความปลอดภัยเนื้อหาไม่เข้มงวด</td>
+                        <td><span class="risk risk-high">สูง</span></td>
+                        <td>CSP อนุญาต unsafe-inline และหลายแหล่งที่มา ต้องกำหนด CSP ที่เข้มงวด, ลบ unsafe-inline, จำกัดแหล่งที่มาของสคริปต์และสร้าง nonce สำหรับสคริปต์ (ไฟล์: next.config.ts)</td>
+                        <td>6,000</td>
+                    </tr>
+
+                    <!-- Medium Risk Items -->
+                    <tr>
+                        <td><input type="checkbox" class="item-check" data-price="7000" data-risk="medium"></td>
+                        <td>การสร้าง Token ไม่ปลอดภัย</td>
+                        <td><span class="risk risk-medium">ปานกลาง</span></td>
+                        <td>Token ใบอนุญาตถูกสร้างด้วยวิธีที่ไม่ปลอดภัย ต้องใช้ crypto module สร้าง token ที่แข็งแกร่ง, เพิ่มการเข้ารหัสแบบ HMAC และกำหนดอายุการใช้งาน token (ไฟล์: app/actions/purchase.ts ฟังก์ชัน generateToken())</td>
+                        <td>7,000</td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox" class="item-check" data-price="5500" data-risk="medium"></td>
+                        <td>ช่องโหว่ SSRF</td>
+                        <td><span class="risk risk-medium">ปานกลาง</span></td>
+                        <td>การร้องขอฝั่งเซิร์ฟเวอร์สามารถถูกดัดแปลงได้ ต้องเพิ่มการตรวจสอบ URL, จำกัด request ให้ไปยังโดเมนที่อนุญาตเท่านั้นและใช้ allow-list สำหรับการเชื่อมต่อภายนอก (ไฟล์: app/actions/top-up.ts)</td>
+                        <td>5,500</td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox" class="item-check" data-price="4500" data-risk="medium"></td>
+                        <td>การจำกัดอัตราการเรียกใช้ไม่เพียงพอ</td>
+                        <td><span class="risk risk-medium">ปานกลาง</span></td>
+                        <td>ขาดการจำกัดอัตราการเรียกใช้บนจุดสำคัญ ต้องเปิดใช้งาน rate limiting ในทุก endpoint สำคัญ, แยกค่าตามความสำคัญและเพิ่มระบบเฝ้าระวังการโจมตี (ไฟล์: middleware.ts, middleware/rate-limit-purchase.ts)</td>
+                        <td>4,500</td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox" class="item-check" data-price="5000" data-risk="medium"></td>
+                        <td>ระบบควบคุมการเข้าถึงของผู้ดูแลไม่เข้มงวด</td>
+                        <td><span class="risk risk-medium">ปานกลาง</span></td>
+                        <td>การตรวจสอบบทบาทสำหรับหน้าผู้ดูแลไม่เพียงพอ ต้องสร้าง middleware สำหรับตรวจสอบสิทธิ์ผู้ดูแลโดยเฉพาะ, เพิ่มการบันทึกกิจกรรมและจำกัดเวลาเซสชัน (ไฟล์: app/admin/client-comp.tsx, app/admin/product/client-comp.tsx)</td>
+                        <td>5,000</td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox" class="item-check" data-price="4000" data-risk="medium"></td>
+                        <td>ข้อความข้อผิดพลาดเปิดเผยข้อมูลมากเกินไป</td>
+                        <td><span class="risk risk-medium">ปานกลาง</span></td>
+                        <td>ข้อความแสดงข้อผิดพลาดเปิดเผยรายละเอียดภายในระบบ ต้องจัดการข้อผิดพลาดใหม่, สร้างข้อความทั่วไป และบันทึกรายละเอียดเฉพาะไว้ในระบบ logging (ไฟล์: app/api/download/route.ts, app/actions/top-up.ts)</td>
+                        <td>4,000</td>
+                    </tr>
+
+                    <!-- Low Risk Items -->
+                    <tr>
+                        <td><input type="checkbox" class="item-check" data-price="4200" data-risk="low"></td>
+                        <td>การจัดการเซสชันไม่ปลอดภัย</td>
+                        <td><span class="risk risk-low">ต่ำ</span></td>
+                        <td>เซสชันหมดอายุนานเกินไป (60 นาที) ไม่มีการตรวจสอบเพิ่มเติม ต้องลดเวลาเซสชันเหลือ 15-30 นาที, เพิ่มการตรวจสอบ IP และ fingerprint และเพิ่มการต่ออายุเซสชันแบบแอคทีฟ (ไฟล์: lib/auth.ts)</td>
+                        <td>4,200</td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox" class="item-check" data-price="3800" data-risk="low"></td>
+                        <td>ช่องโหว่ XSS</td>
+                        <td><span class="risk risk-low">ต่ำ</span></td>
+                        <td>การทำความสะอาดข้อมูลนำเข้าไม่เพียงพอ ต้องเพิ่มการทำความสะอาดข้อมูลทุกจุด, ใช้ React ในการ escape HTML และใช้การทำ sanitize ด้านเซิร์ฟเวอร์ (ไฟล์: app/admin/licenses/license-table.tsx, app/admin/users/user-table.tsx)</td>
+                        <td>3,800</td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox" class="item-check" data-price="3500" data-risk="low"></td>
+                        <td>ขาดระบบบันทึกการตรวจสอบ</td>
+                        <td><span class="risk risk-low">ต่ำ</span></td>
+                        <td>ไม่มีระบบบันทึกกิจกรรมที่ครอบคลุม ต้องสร้างระบบ audit logging, บันทึกการเข้าสู่ระบบ การทำธุรกรรมและเปลี่ยนแปลงสิทธิ์ รวมถึงสร้างระบบแจ้งเตือนความผิดปกติ (ต้องสร้างไฟล์ใหม่: lib/logging.ts)</td>
+                        <td>3,500</td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox" class="item-check" data-price="3000" data-risk="low"></td>
+                        <td>การเชื่อมต่อ MongoDB ไม่ปลอดภัย</td>
+                        <td><span class="risk risk-low">ต่ำ</span></td>
+                        <td>ไม่มีการกำหนดค่า TLS/SSL อย่างชัดเจน ต้องเพิ่มการเชื่อมต่อแบบ TLS/SSL, ตรวจสอบใบรับรอง และกำหนดผู้ใช้/รหัสผ่านเฉพาะสำหรับการเชื่อมต่อฐานข้อมูล (ไฟล์: lib/functions.ts)</td>
+                        <td>3,000</td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox" class="item-check" data-price="2500" data-risk="low"></td>
+                        <td>วิธีการยืนยันตัวตนเพียงวิธีเดียว</td>
+                        <td><span class="risk risk-low">ต่ำ</span></td>
+                        <td>พึ่งพาเฉพาะ Discord OAuth โดยไม่มีทางเลือกอื่น ต้องเพิ่มวิธียืนยันตัวตนอื่น เช่น อีเมล/รหัสผ่าน, Google OAuth และเพิ่มระบบยืนยันตัวตนสองชั้น (ไฟล์: lib/auth.ts)</td>
+                        <td>2,500</td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox" class="item-check" data-price="2000" data-risk="low"></td>
+                        <td>HTTP Headers ไม่เพียงพอ</td>
+                        <td><span class="risk risk-low">ต่ำ</span></td>
+                        <td>headers ความปลอดภัยขาดหายหรือไม่เพียงพอ ต้องกำหนด X-Frame-Options เป็น DENY, เพิ่ม X-Content-Type-Options และปรับปรุง Referrer-Policy ให้เข้มงวดขึ้น (ไฟล์: next.config.ts)</td>
+                        <td>2,000</td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox" class="item-check" data-price="1500" data-risk="low"></td>
+</td>
+                        <td>No HTTP Strict Transport Security enforcement</td>
+                        <td>1,500</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section class="total-section">
+            <h2>สรุป</h2>
+            <table class="total-table">
+                <tr>
+                    <td>รายการที่เลือก</td>
+                    <td class="price"><span id="selected-count">0</span> รายการ</td>
+                </tr>
+                <tr>
+                    <td>ราคารวม</td>
+                    <td class="price"><span id="subtotal">0</span> บาท</td>
+                </tr>
+                <tr class="total-row">
+                    <td>รวมทั้งสิ้น</td>
+                    <td class="price"><span id="total">0</span> บาท</td>
+                </tr>
+            </table>
+        </section>
+
+        <div id="budget-message" class="message">
+            Warning: Your selections exceed the allocated budget of 100,000 THB!
+        </div>
+
+        <section class="button-section">
+            <button id="print-btn" class="button secondary-button">Print Proposal (PDF)</button>
+            <button id="submit-btn" class="button primary-button">Submit Selection</button>
+        </section>
+
+        <footer>
+            <p>© 2025 MSC FiveM E-commerce Security Team | All prices are in Thai Baht (THB) and exclusive of VAT</p>
+        </footer>
+    </div>
+
+    <script>
+        // Calculate totals based on checked items
+        const checkboxes = document.querySelectorAll('.item-check');
+        const selectedCount = document.getElementById('selected-count');
+        const subtotalElement = document.getElementById('subtotal');
+        const vatElement = document.getElementById('vat');
+        const totalElement = document.getElementById('total');
+        const remainingElement = document.getElementById('remaining');
+        const budgetMessage = document.getElementById('budget-message');
+        const submitBtn = document.getElementById('submit-btn');
+        const printBtn = document.getElementById('print-btn');
+        
+        const BUDGET = 0;
+        
+        function calculateTotals() {
+            let subtotal = 0;
+            let count = 0;
+            
+            checkboxes.forEach(checkbox => {
+                if (checkbox.checked) {
+                    subtotal += parseInt(checkbox.dataset.price);
+                    count++;
+                }
+            });
+            
+            const vat = Math.round(subtotal * 0.07);
+            const total = subtotal + vat;
+            const remaining = BUDGET - total;
+            
+            selectedCount.textContent = count;
+            subtotalElement.textContent = subtotal.toLocaleString();
+            vatElement.textContent = vat.toLocaleString();
+            totalElement.textContent = total.toLocaleString();
+            remainingElement.textContent = remaining.toLocaleString();
+            
+            // Only show warning if budget has been set and we're over budget
+            if (BUDGET > 0 && total > BUDGET) {
+                budgetMessage.style.display = 'block';
+                submitBtn.disabled = true;
+            } else {
+                budgetMessage.style.display = 'none';
+                submitBtn.disabled = false;
+            }
+        }
+        
+        // Add event listeners to checkboxes
+        checkboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', calculateTotals);
+        });
+        
+        // Print function
+        printBtn.addEventListener('click', () => {
+            window.print();
+        });
+        
+        // Submit function
+        submitBtn.addEventListener('click', () => {
+            // Get the budget value from input if available
+            const budgetInput = document.getElementById('budget-input');
+            if (budgetInput) {
+                BUDGET = parseInt(budgetInput.value) || 0;
+                document.getElementById('budget').textContent = BUDGET.toLocaleString();
+                calculateTotals();
+            }
+            
+            alert('บันทึกการเลือกรายการปรับปรุงความปลอดภัยเรียบร้อยแล้ว!');
+        });
+        
+        // Add budget input option
+        document.addEventListener('DOMContentLoaded', function() {
+            const budgetElement = document.getElementById('budget');
+            if (budgetElement) {
+                const budgetValue = budgetElement.textContent || '0';
+                
+                // Create budget input element
+                const budgetInput = document.createElement('input');
+                budgetInput.type = 'number';
+                budgetInput.id = 'budget-input';
+                budgetInput.className = 'border border-white/10 bg-white/5 outline-0 rounded-xl px-4 py-2 text-right w-32';
+                budgetInput.value = budgetValue.replace(/,/g, '');
+                budgetInput.min = '0';
+                budgetInput.addEventListener('change', function() {
+                    BUDGET = parseInt(this.value) || 0;
+                    budgetElement.textContent = BUDGET.toLocaleString();
+                    calculateTotals();
+                });
+                
+                // Replace text with input
+                budgetElement.textContent = '';
+                budgetElement.appendChild(budgetInput);
+            }
+        });
+    </script>
+</body>
+</html>
